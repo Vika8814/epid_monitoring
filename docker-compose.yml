@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  # Сервіс для бази даних MySQL
+  db:
+    image: mysql:8.0
+    volumes:
+      - mysql_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: mvv081105
+      MYSQL_DATABASE: epidem_monitoring
+      MYSQL_USER: root
+      MYSQL_PASSWORD: mvv081105
+    ports:
+      - "3307:3306" # Прокидаємо порт MySQL назовні для підключення через Workbench
+
+  # Сервіс для нашого Django-додатку
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_NAME=epidem_monitoring
+      - DB_USER=root
+      - DB_PASSWORD=mvv081105
+      - DB_HOST=127.0.0.1 # Назва сервісу бази даних
+      - DB_PORT=3306
+    depends_on:
+      - db
+
+volumes:
+  mysql_data:
