@@ -13,4 +13,6 @@ router.register(r'symptoms', views.SymptomViewSet)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)), # <-- ДОДАНО. Всі API будуть за адресою /api/...
+    path('api/statistics/', views.StatisticsView.as_view(), name='statistics'),
+    path('api/sir_modeling/', views.SIRModelingView.as_view(), name='sir_modeling'),
 ]
