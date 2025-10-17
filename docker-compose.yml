@@ -1,7 +1,4 @@
-version: '3.8'
-
 services:
-  # Сервіс для бази даних MySQL
   db:
     image: mysql:8.0
     volumes:
@@ -9,12 +6,17 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: mvv081105
       MYSQL_DATABASE: epidem_monitoring
-      MYSQL_USER: root
-      MYSQL_PASSWORD: mvv081105
+     
     ports:
-      - "3307:3306" # Прокидаємо порт MySQL назовні для підключення через Workbench
+      - "3307:3306"
+    networks:
+      - monitoring_network
+    # ДОДАНО: Перевірка, чи база даних готова приймати з'єднання
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost", "-p${MYSQL_ROOT_PASSWORD}"]
+      timeout: 20s
+      retries: 10
 
-  # Сервіс для нашого Django-додатку
   web:
     build: .
     command: python manage.py runserver 0.0.0.0:8000
@@ -26,10 +28,18 @@ services:
       - DB_NAME=epidem_monitoring
       - DB_USER=root
       - DB_PASSWORD=mvv081105
-      - DB_HOST=127.0.0.1 # Назва сервісу бази даних
+      - DB_HOST=db
       - DB_PORT=3306
+    # ОНОВЛЕНО: Тепер web чекає, поки db стане "здоровим"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    networks:
+      - monitoring_network
 
 volumes:
   mysql_data:
+
+networks:
+  monitoring_network:
+    driver: bridge
