@@ -17,4 +17,6 @@ urlpatterns = [
     path('api/', include(router.urls)), # <-- ДОДАНО. Всі API будуть за адресою /api/...
     path('api/statistics/', views.StatisticsView.as_view(), name='statistics'),
     path('api/sir_modeling/', views.SIRModelingView.as_view(), name='sir_modeling'),
+    path('api/auth/', include('dj_rest_auth.urls')),
+    path('api/auth/registration/', include('dj_rest_auth.registration.urls')),
 ]

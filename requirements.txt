@@ -3,3 +3,6 @@ djangorestframework
 mysql-connector-python
 django-cors-headers
 numpy
+dj-rest-auth
+django-allauth
+requests

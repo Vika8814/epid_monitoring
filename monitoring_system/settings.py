@@ -11,6 +11,8 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 # Application definition
+# settings.py
+# settings.py
 INSTALLED_APPS = [
     'api',
     'django.contrib.admin',
@@ -20,13 +22,21 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken', # <-- ДОДАЙТЕ ЦЕЙ РЯДОК
     'corsheaders',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'dj_rest_auth',
+    'dj_rest_auth.registration',
 ]
 
+# settings.py
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware', # Має бути високо
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'allauth.account.middleware.AccountMiddleware', # <-- ДОДАЙТЕ ЦЕЙ РЯДОК
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -94,4 +104,8 @@ CORS_ALLOWED_ORIGINS = [
 ]
 # CORS_ALLOW_CREDENTIALS = True # Тимчасово прибираємо
 
-# REST_FRAMEWORK = { ... } # ПОВНІСТЮ ВИДАЛЯЄМО ЦЕЙ БЛОК
+# settings.py
+SITE_ID = 1 # Необхідно для allauth
+ACCOUNT_EMAIL_VERIFICATION = 'none' # Спрощуємо: не вимагаємо підтвердження пошти
+ACCOUNT_AUTHENTICATION_METHOD = 'username' # Вхід за логіном
+ACCOUNT_EMAIL_REQUIRED = False # Не робимо email обов'язковим для реєстрації
