@@ -2,6 +2,7 @@
 from rest_framework import viewsets
 from .models import Institution, Visit, Symptom, ChatRoom, Message
 from .serializers import InstitutionSerializer, VisitSerializer, SymptomSerializer, ChatRoomSerializer, MessageSerializer
+from rest_framework.permissions import AllowAny
 class InstitutionViewSet(viewsets.ReadOnlyModelViewSet):
     """
     API endpoint, що дозволяє переглядати заклади.
@@ -99,6 +100,7 @@ class SIRModelingView(APIView):
     """
     API endpoint для SIR-моделювання.
     """
+    permission_classes = [AllowAny]
     def post(self, request, *args, **kwargs):
         # Отримуємо параметри з запиту, або використовуємо значення за замовчуванням
         N = int(request.data.get('population', 1000))  # Загальна популяція
