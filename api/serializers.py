@@ -1,6 +1,6 @@
 # api/serializers.py
 from rest_framework import serializers
-from .models import Institution, User, Patient, Symptom, Visit
+from .models import Institution, User, Patient, Symptom, Visit, ChatRoom, Message
 
 class InstitutionSerializer(serializers.ModelSerializer):
     class Meta:
@@ -22,3 +22,19 @@ class VisitSerializer(serializers.ModelSerializer):
     class Meta:
         model = Visit
         fields = ['id', 'visit_date', 'institution_name', 'doctor_name', 'patient_code', 'symptoms']
+
+class MessageSerializer(serializers.ModelSerializer):
+    sender_name = serializers.CharField(source='sender.username', read_only=True)
+
+    class Meta:
+        model = Message
+        # Вказуємо поля для читання та запису
+        fields = ['id', 'room', 'sender', 'sender_name', 'content', 'timestamp']
+        # Поле 'sender' потрібне тільки для запису, воно буде встановлюватись автоматично
+        read_only_fields = ['sender_name', 'timestamp']
+
+
+class ChatRoomSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ChatRoom
+        fields = '__all__'

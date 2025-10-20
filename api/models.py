@@ -50,3 +50,24 @@ class Visit(models.Model):
 
     def __str__(self):
         return f"Візит {self.patient.patient_code} до {self.institution.name} ({self.visit_date.strftime('%Y-%m-%d')})"
+    
+# api/models.py (додати в кінець файлу)
+
+class ChatRoom(models.Model):
+    name = models.CharField(max_length=255, unique=True, verbose_name="Назва кімнати")
+    participants = models.ManyToManyField(Institution, verbose_name="Учасники")
+
+    def __str__(self):
+        return self.name
+
+class Message(models.Model):
+    room = models.ForeignKey(ChatRoom, on_delete=models.CASCADE, related_name='messages', verbose_name="Кімната")
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Відправник")
+    content = models.TextField(verbose_name="Вміст")
+    timestamp = models.DateTimeField(auto_now_add=True, verbose_name="Час відправки")
+
+    class Meta:
+        ordering = ['timestamp']
+
+    def __str__(self):
+        return f"Від {self.sender.username} у кімнаті {self.room.name}"

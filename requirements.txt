@@ -2,3 +2,4 @@ django
 djangorestframework
 mysql-connector-python
 django-cors-headers
+numpy

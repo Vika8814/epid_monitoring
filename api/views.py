@@ -1,8 +1,7 @@
 # api/views.py
 from rest_framework import viewsets
-from .models import Institution, Visit, Symptom
-from .serializers import InstitutionSerializer, VisitSerializer, SymptomSerializer
-
+from .models import Institution, Visit, Symptom, ChatRoom, Message
+from .serializers import InstitutionSerializer, VisitSerializer, SymptomSerializer, ChatRoomSerializer, MessageSerializer
 class InstitutionViewSet(viewsets.ReadOnlyModelViewSet):
     """
     API endpoint, що дозволяє переглядати заклади.
@@ -24,7 +23,37 @@ class SymptomViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Symptom.objects.all()
     serializer_class = SymptomSerializer
 
+class ChatRoomViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    API endpoint для перегляду чат-кімнат, доступних користувачу.
+    """
+    serializer_class = ChatRoomSerializer
 
+    def get_queryset(self):
+        # Користувач бачить тільки ті кімнати, в яких бере участь його заклад
+        user_institution = self.request.user.institution
+        if user_institution:
+            return ChatRoom.objects.filter(participants=user_institution)
+        return ChatRoom.objects.none()
+
+
+class MessageViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint для перегляду та відправки повідомлень.
+    """
+    serializer_class = MessageSerializer
+
+    def get_queryset(self):
+        # Фільтруємо повідомлення за параметром 'room' з URL
+        # Наприклад: /api/messages/?room=1
+        room_id = self.request.query_params.get('room')
+        if room_id:
+            return Message.objects.filter(room_id=room_id)
+        return Message.objects.none()
+
+    def perform_create(self, serializer):
+        # Автоматично встановлюємо відправника як поточного користувача
+        serializer.save(sender=self.request.user)
     # api/views.py (додати в кінець файлу)
 from django.db.models import Count
 from django.db.models.functions import TruncDay
@@ -63,7 +92,7 @@ class StatisticsView(APIView):
         return Response(data)
     
 
-    # api/views.py (додати в кінець файлу)
+    
 import numpy as np
 
 class SIRModelingView(APIView):

@@ -9,6 +9,8 @@ router = routers.DefaultRouter()
 router.register(r'institutions', views.InstitutionViewSet)
 router.register(r'visits', views.VisitViewSet)
 router.register(r'symptoms', views.SymptomViewSet)
+router.register(r'chatrooms', views.ChatRoomViewSet, basename='chatroom')
+router.register(r'messages', views.MessageViewSet, basename='message')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
