@@ -5,13 +5,18 @@ FROM python:3.10-slim
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-# РЯДОК, ЯКИЙ ТРЕБА ВИДАЛИТИ
-# RUN apt-get update && apt-get install -y build-essential default-libmysqlclient-dev
+# Встановлюємо системні залежності
+# (для mysqlclient та reportlab)
+RUN apt-get update && \
+    apt-get install -y gcc default-libmysqlclient-dev pkg-config \
+    fonts-freefont-ttf \
+    && apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Встановлюємо робочу директорію всередині контейнера
 WORKDIR /app
 
-# Копіюємо файл залежностей та встановлюємо їх
+# Копіюємо файл залежностей та ВСТАНОВЛЮЄМО ЇХ
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 

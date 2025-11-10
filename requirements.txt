@@ -1,8 +1,9 @@
-django
+django>=4.2,<4.3
 djangorestframework
-mysql-connector-python
+mysqlclient==2.1.1
 django-cors-headers
 numpy
 dj-rest-auth
 django-allauth
 requests
+reportlab

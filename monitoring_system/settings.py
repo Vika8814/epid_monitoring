@@ -1,18 +1,14 @@
-# monitoring_system/settings.py
 import os
 from pathlib import Path
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-# Quick-start development settings - unsuitable for production
-SECRET_KEY = 'django-insecure-m#iyu0sg_=sp*!xor07u@2dh6_^m@ga0&5w6&=v!6ag_c)w07y' # Використовуйте ваш ключ
+SECRET_KEY = 'django-insecure-m#iyu0sg_=sp*!xor07u@2dh6_^m@ga0&5w6&=v!6ag_c)w07y'
 DEBUG = True
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+]
 
-# Application definition
-# settings.py
-# settings.py
 INSTALLED_APPS = [
     'api',
     'django.contrib.admin',
@@ -22,7 +18,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'rest_framework.authtoken', # <-- ДОДАЙТЕ ЦЕЙ РЯДОК
+    'rest_framework.authtoken',
     'corsheaders',
     'allauth',
     'allauth.account',
@@ -31,14 +27,13 @@ INSTALLED_APPS = [
     'dj_rest_auth.registration',
 ]
 
-# settings.py
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'allauth.account.middleware.AccountMiddleware', # <-- ДОДАЙТЕ ЦЕЙ РЯДОК
+    'allauth.account.middleware.AccountMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware', # <-- ВИМКНЕНО CSRF-ЗАХИСТ
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -63,10 +58,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'monitoring_system.wsgi.application'
 
-# Database
 DATABASES = {
     'default': {
-        'ENGINE': 'mysql.connector.django',
+        'ENGINE': 'django.db.backends.mysql',
         'NAME': os.environ.get('DB_NAME'),
         'USER': os.environ.get('DB_USER'),
         'PASSWORD': os.environ.get('DB_PASSWORD'),
@@ -75,7 +69,6 @@ DATABASES = {
     }
 }
 
-# Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -83,29 +76,62 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-# Internationalization
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# Static files
 STATIC_URL = 'static/'
-
-# Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
 AUTH_USER_MODEL = 'api.User'
 
-# CORS Settings
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-]
-# CORS_ALLOW_CREDENTIALS = True # Тимчасово прибираємо
 
-# settings.py
-SITE_ID = 1 # Необхідно для allauth
-ACCOUNT_EMAIL_VERIFICATION = 'none' # Спрощуємо: не вимагаємо підтвердження пошти
-ACCOUNT_AUTHENTICATION_METHOD = 'username' # Вхід за логіном
-ACCOUNT_EMAIL_REQUIRED = False # Не робимо email обов'язковим для реєстрації
+
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:3000',
+    'http://127.0.0.1:3000' # Можете додати і це про всяк випадок
+]
+
+
+
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+]
+CORS_ALLOW_CREDENTIALS = True
+
+SITE_ID = 1
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_LOGIN_METHODS = {'username'}
+ACCOUNT_SIGNUP_FIELDS = {'username', 'password1', 'password2'}
+ACCOUNT_EMAIL_REQUIRED = False
+ACCOUNT_USERNAME_REQUIRED = True
+
+# CSRF_TRUSTED_ORIGINS не потрібен, оскільки CsrfViewMiddleware вимкнено
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    ],
+     'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.JSONParser',
+        'rest_framework.parsers.FormParser',
+        'rest_framework.parsers.MultiPartParser',
+    ]
+}
+
+REST_AUTH = {
+    'REGISTER_SERIALIZER': 'api.serializers.CustomRegisterSerializer',
+    'USER_DETAILS_SERIALIZER': 'api.serializers.UserDetailSerializer',
+}
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# SESSION_COOKIE_SAMESITE = 'Lax' # Не потрібно при вимкненому CSRF
+# CSRF_COOKIE_SAMESITE = 'Lax'
+# CSRF_USE_SESSIONS = False
+# CSRF_COOKIE_HTTPONLY = False
+

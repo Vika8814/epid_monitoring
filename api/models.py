@@ -1,6 +1,7 @@
 # api/models.py
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.conf import settings
 
 class Institution(models.Model):
     INSTITUTION_TYPES = [
@@ -21,6 +22,7 @@ class User(AbstractUser):
         ('Аналітик', 'Аналітик'),
     ]
     role = models.CharField(max_length=20, choices=USER_ROLES, verbose_name="Роль")
+    image = models.ImageField(upload_to='avatars/', null=True, blank=True)
     institution = models.ForeignKey(Institution, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Заклад")
 
 class Patient(models.Model):
@@ -71,3 +73,18 @@ class Message(models.Model):
 
     def __str__(self):
         return f"Від {self.sender.username} у кімнаті {self.room.name}"
+    
+class Report(models.Model):
+    # Посилання на користувача, який завантажив звіт
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE, 
+        related_name='reports'
+    )
+    # Поле для зберігання файлу. Файли будуть у папці 'media/reports/'
+    file = models.FileField(upload_to='reports/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        # Використовуємо .path, щоб отримати назву файлу
+        return f'Report ({self.file.path}) by {self.user.username}'
